@@ -6,7 +6,7 @@
 
 {% style %}
   .ai-events-calendar-{{ ai_gen_id }} {
-    padding: {{ block.settings.padding_top }}px calc({{ block.settings.padding_horizontal }}px + 30px) {{ block.settings.padding_bottom }}px;
+    padding: {{ block.settings.padding_top }}px calc({{ block.settings.padding_horizontal }}px + 60px) {{ block.settings.padding_bottom }}px;
     background-color: {{ block.settings.background_color }};
     max-width: {{ block.settings.max_width }}px;
     margin: 0 auto;
@@ -82,7 +82,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    min-height: 40px;
+    min-height: 32px;
   }
 
   .ai-events-calendar__day-{{ ai_gen_id }}:hover {
@@ -257,7 +257,7 @@
     }
 
     .ai-events-calendar__day-{{ ai_gen_id }} {
-      min-height: 35px;
+      min-height: 28px;
     }
 
     .ai-events-calendar__day-number-{{ ai_gen_id }} {
