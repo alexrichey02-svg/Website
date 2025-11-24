@@ -82,7 +82,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    min-height: 60px;
+    min-height: 50px;
   }
 
   .ai-events-calendar__day-{{ ai_gen_id }}:hover {
@@ -107,18 +107,18 @@
   }
 
   .ai-events-calendar__day-number-{{ ai_gen_id }} {
-    font-size: 14px;
+    font-size: 13px;
     color: {{ block.settings.text_color }};
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
 
   .ai-events-calendar__event-indicator-{{ ai_gen_id }} {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     background-color: {{ block.settings.event_indicator_color }};
     border-radius: 50%;
     position: absolute;
-    bottom: 8px;
+    bottom: 6px;
   }
 
   .ai-events-calendar__event-preview-{{ ai_gen_id }} {
@@ -257,16 +257,16 @@
     }
 
     .ai-events-calendar__day-{{ ai_gen_id }} {
-      min-height: 60px;
+      min-height: 45px;
     }
 
     .ai-events-calendar__day-number-{{ ai_gen_id }} {
-      font-size: 14px;
+      font-size: 12px;
     }
 
     .ai-events-calendar__current-month-{{ ai_gen_id }} {
-      font-size: 16px;
-      min-width: 120px;
+      font-size: 14px;
+      min-width: 110px;
     }
 
     .ai-events-calendar__title-{{ ai_gen_id }} {
