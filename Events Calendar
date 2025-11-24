@@ -83,6 +83,8 @@
     transition: all 0.3s ease;
     position: relative;
     min-height: 32px;
+    max-height: 32px;
+    max-width: 32px;
   }
 
   .ai-events-calendar__day-{{ ai_gen_id }}:hover {
@@ -258,6 +260,8 @@
 
     .ai-events-calendar__day-{{ ai_gen_id }} {
       min-height: 28px;
+      max-height: 28px;
+      max-width: 28px;
     }
 
     .ai-events-calendar__day-number-{{ ai_gen_id }} {
