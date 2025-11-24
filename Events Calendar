@@ -82,7 +82,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    min-height: 50px;
+    min-height: 45px;
   }
 
   .ai-events-calendar__day-{{ ai_gen_id }}:hover {
@@ -107,9 +107,9 @@
   }
 
   .ai-events-calendar__day-number-{{ ai_gen_id }} {
-    font-size: 13px;
+    font-size: 14px;
     color: {{ block.settings.text_color }};
-    margin-bottom: 3px;
+    margin-bottom: 4px;
   }
 
   .ai-events-calendar__event-indicator-{{ ai_gen_id }} {
@@ -257,11 +257,11 @@
     }
 
     .ai-events-calendar__day-{{ ai_gen_id }} {
-      min-height: 45px;
+      min-height: 40px;
     }
 
     .ai-events-calendar__day-number-{{ ai_gen_id }} {
-      font-size: 12px;
+      font-size: 14px;
     }
 
     .ai-events-calendar__current-month-{{ ai_gen_id }} {
