@@ -65,7 +65,7 @@
   .ai-events-calendar__day-header-{{ ai_gen_id }} {
     text-align: center;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 16px;
     color: {{ block.settings.day_header_color }};
     padding: 8px 0;
     border-bottom: 1px solid {{ block.settings.border_color }};
