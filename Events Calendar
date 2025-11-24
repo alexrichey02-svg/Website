@@ -83,9 +83,9 @@
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    min-height: 32px;
-    max-height: 32px;
-    max-width: 32px;
+    min-height: 55px;
+    max-height: 55px;
+    max-width: 55px;
   }
 
   .ai-events-calendar__day-{{ ai_gen_id }}:hover {
@@ -260,9 +260,9 @@
     }
 
     .ai-events-calendar__day-{{ ai_gen_id }} {
-      min-height: 28px;
-      max-height: 28px;
-      max-width: 28px;
+      min-height: 50px;
+      max-height: 50px;
+      max-width: 50px;
     }
 
     .ai-events-calendar__day-number-{{ ai_gen_id }} {
@@ -573,7 +573,7 @@
       "step": 100,
       "unit": "px",
       "label": "Maximum width",
-      "default": 1200
+      "default": 900
     },
     {
       "type": "header",
