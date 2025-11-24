@@ -556,8 +556,13 @@
 
       parseDateLocal(dateStr) {
         // Parse YYYY-MM-DD in local timezone to avoid timezone conversion issues
-        const [year, month, day] = dateStr.split('-').map(num => parseInt(num, 10));
-        return new Date(year, month - 1, day);
+        // Trim any whitespace and split the date
+        const parts = dateStr.trim().split('-');
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const day = parseInt(parts[2], 10);
+        // Create date at noon to avoid any DST edge cases
+        return new Date(year, month - 1, day, 12, 0, 0);
       }
 
       renderEvents() {
