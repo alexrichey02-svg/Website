@@ -257,25 +257,25 @@
   @media screen and (max-width: 749px) {
     .ai-events-calendar__grid-{{ ai_gen_id }} {
       gap: {{ block.settings.grid_gap | divided_by: 2 }}px;
-      margin: 0 10px 20px 10px;
+      margin: 0 5px 20px 5px;
     }
 
     .ai-events-calendar__header-{{ ai_gen_id }} {
-      margin: 0 10px 20px 10px;
+      margin: 0 5px 20px 5px;
     }
 
     .ai-events-calendar__events-list-{{ ai_gen_id }} {
-      margin: 20px 10px 0 10px;
+      margin: 20px 5px 0 5px;
     }
 
     .ai-events-calendar__day-{{ ai_gen_id }} {
-      min-height: 50px;
-      max-height: 50px;
-      max-width: 50px;
+      min-height: 38px;
+      max-height: 38px;
+      max-width: 38px;
     }
 
     .ai-events-calendar__day-number-{{ ai_gen_id }} {
-      font-size: 14px;
+      font-size: 12px;
     }
 
     .ai-events-calendar__current-month-{{ ai_gen_id }} {
