@@ -274,6 +274,13 @@
       max-width: 38px;
     }
 
+    .ai-events-calendar__day-header-{{ ai_gen_id }} {
+      font-size: 10px;
+      padding: 6px 0;
+      max-width: 38px;
+      margin: 0 auto;
+    }
+
     .ai-events-calendar__day-number-{{ ai_gen_id }} {
       font-size: 12px;
     }
@@ -288,12 +295,9 @@
     }
 
     .ai-events-calendar__event-preview-{{ ai_gen_id }} {
-      left: auto;
-      right: auto;
-      transform: translateY(-8px);
-      min-width: 180px;
-      max-width: calc(100vw - 20px);
-      margin-left: 50%;
+      min-width: 160px;
+      max-width: calc(100vw - 30px);
+      left: 50%;
       transform: translateX(-50%) translateY(-8px);
     }
 
@@ -301,26 +305,47 @@
       transform: translateX(-50%) translateY(-12px);
     }
 
-    .ai-events-calendar__day-{{ ai_gen_id }}:first-child .ai-events-calendar__event-preview-{{ ai_gen_id }},
-    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n+1) .ai-events-calendar__event-preview-{{ ai_gen_id }} {
-      left: 0;
-      transform: translateX(0) translateY(-8px);
-      margin-left: 0;
+    /* Left edge days - align preview to left of viewport */
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n+1) .ai-events-calendar__event-preview-{{ ai_gen_id }},
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n+2) .ai-events-calendar__event-preview-{{ ai_gen_id }} {
+      left: 50%;
+      right: auto;
+      transform: translateX(-19px) translateY(-8px);
     }
 
-    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n+1):hover .ai-events-calendar__event-preview-{{ ai_gen_id }} {
-      transform: translateX(0) translateY(-12px);
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n+1):hover .ai-events-calendar__event-preview-{{ ai_gen_id }},
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n+2):hover .ai-events-calendar__event-preview-{{ ai_gen_id }} {
+      transform: translateX(-19px) translateY(-12px);
     }
 
-    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n) .ai-events-calendar__event-preview-{{ ai_gen_id }} {
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n+1) .ai-events-calendar__event-preview-{{ ai_gen_id }}::after,
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n+2) .ai-events-calendar__event-preview-{{ ai_gen_id }}::after {
+      left: 19px;
+      transform: translateX(0);
+    }
+
+    /* Right edge days - align preview to right of viewport */
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n),
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n-1) {
+    }
+
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n) .ai-events-calendar__event-preview-{{ ai_gen_id }},
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n-1) .ai-events-calendar__event-preview-{{ ai_gen_id }} {
       left: auto;
-      right: 0;
-      transform: translateX(0) translateY(-8px);
-      margin-left: 0;
+      right: 50%;
+      transform: translateX(19px) translateY(-8px);
     }
 
-    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n):hover .ai-events-calendar__event-preview-{{ ai_gen_id }} {
-      transform: translateX(0) translateY(-12px);
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n):hover .ai-events-calendar__event-preview-{{ ai_gen_id }},
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n-1):hover .ai-events-calendar__event-preview-{{ ai_gen_id }} {
+      transform: translateX(19px) translateY(-12px);
+    }
+
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n) .ai-events-calendar__event-preview-{{ ai_gen_id }}::after,
+    .ai-events-calendar__day-{{ ai_gen_id }}:nth-child(7n-1) .ai-events-calendar__event-preview-{{ ai_gen_id }}::after {
+      left: auto;
+      right: 19px;
+      transform: translateX(0);
     }
   }
 {% endstyle %}
