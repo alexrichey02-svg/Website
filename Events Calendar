@@ -6,7 +6,7 @@
 
 {% style %}
   .ai-events-calendar-{{ ai_gen_id }} {
-    padding: {{ block.settings.padding_top }}px calc({{ block.settings.padding_horizontal }}px + 60px) {{ block.settings.padding_bottom }}px;
+    padding: {{ block.settings.padding_top }}px calc({{ block.settings.padding_horizontal }}px + 100px) {{ block.settings.padding_bottom }}px;
     background-color: {{ block.settings.background_color }};
     max-width: {{ block.settings.max_width }}px;
     margin: 0 auto;
