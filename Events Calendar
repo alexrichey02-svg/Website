@@ -59,6 +59,7 @@
     grid-template-columns: repeat(7, 1fr);
     gap: {{ block.settings.grid_gap }}px;
     margin-bottom: 20px;
+    justify-items: center;
   }
 
   .ai-events-calendar__day-header-{{ ai_gen_id }} {
