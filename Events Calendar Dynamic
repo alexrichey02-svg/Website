@@ -1,0 +1,1746 @@
+{% doc %}
+  @prompt
+    I want to build an interactive calender for events, add more events 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-events-calendar-{{ ai_gen_id }} {
+    padding: {{ block.settings.padding_top }}px calc({{ block.settings.padding_horizontal }}px + 100px) {{ block.settings.padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-events-calendar__header-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 40px 20px 40px;
+  }
+
+  .ai-events-calendar__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+  }
+
+  .ai-events-calendar__nav-{{ ai_gen_id }} {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .ai-events-calendar__nav-button-{{ ai_gen_id }} {
+    background-color: {{ block.settings.nav_button_bg }};
+    color: {{ block.settings.nav_button_color }};
+    border: 1px solid {{ block.settings.nav_button_border }};
+    border-radius: {{ block.settings.button_border_radius }}px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .ai-events-calendar__nav-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.nav_button_hover_bg }};
+    color: {{ block.settings.nav_button_hover_color }};
+  }
+
+  .ai-events-calendar__current-month-{{ ai_gen_id }} {
+    font-size: 16px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+    min-width: 130px;
+    text-align: center;
+  }
+
+  .ai-events-calendar__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: {{ block.settings.grid_gap }}px;
+    margin: 0 40px 20px 40px;
+  }
+
+  .ai-events-calendar__day-header-{{ ai_gen_id }} {
+    text-align: center;
+    font-weight: 600;
+    font-size: 12px;
+    color: {{ block.settings.day_header_color }};
+    padding: 8px 0;
+    border-bottom: 1px solid {{ block.settings.border_color }};
+  }
+
+  .ai-events-calendar__day-{{ ai_gen_id }} {
+    aspect-ratio: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.day_border_radius }}px;
+    background-color: {{ block.settings.day_bg_color }};
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    max-width: 150px;
+  }
+
+  .ai-events-calendar__day-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.day_hover_bg }};
+    border-color: {{ block.settings.day_hover_border }};
+  }
+
+  .ai-events-calendar__day-{{ ai_gen_id }}.other-month {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .ai-events-calendar__day-{{ ai_gen_id }}.today {
+    background-color: {{ block.settings.today_bg_color }};
+    border-color: {{ block.settings.today_border_color }};
+    font-weight: 700;
+  }
+
+  .ai-events-calendar__day-{{ ai_gen_id }}.has-event {
+    background-color: {{ block.settings.event_day_bg }};
+    border-color: {{ block.settings.event_day_border }};
+  }
+
+  .ai-events-calendar__day-number-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ block.settings.text_color }};
+    margin-bottom: 4px;
+  }
+
+  .ai-events-calendar__event-indicator-{{ ai_gen_id }} {
+    width: 5px;
+    height: 5px;
+    background-color: {{ block.settings.event_indicator_color }};
+    border-radius: 50%;
+    position: absolute;
+    bottom: 6px;
+  }
+
+  .ai-events-calendar__event-preview-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background-color: {{ block.settings.text_color }};
+    color: {{ block.settings.background_color }};
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    min-width: 200px;
+    max-width: 300px;
+    white-space: normal;
+  }
+
+  .ai-events-calendar__day-{{ ai_gen_id }}:hover .ai-events-calendar__event-preview-{{ ai_gen_id }} {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-12px);
+  }
+
+  .ai-events-calendar__event-preview-{{ ai_gen_id }}::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: {{ block.settings.text_color }};
+  }
+
+  .ai-events-calendar__preview-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .ai-events-calendar__preview-time-{{ ai_gen_id }},
+  .ai-events-calendar__preview-location-{{ ai_gen_id }} {
+    font-size: 12px;
+    margin-bottom: 4px;
+    opacity: 0.9;
+    line-height: 1.3;
+  }
+
+  .ai-events-calendar__preview-time-{{ ai_gen_id }}::before {
+    content: '🕒 ';
+    margin-right: 4px;
+  }
+
+  .ai-events-calendar__preview-location-{{ ai_gen_id }}::before {
+    content: '📍 ';
+    margin-right: 4px;
+  }
+
+  .ai-events-calendar__events-list-{{ ai_gen_id }} {
+    margin: 20px 40px 0 40px;
+  }
+
+  .ai-events-calendar__events-title-{{ ai_gen_id }} {
+    font-size: 18px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+    margin-bottom: 15px;
+  }
+
+  .ai-events-calendar__event-card-{{ ai_gen_id }} {
+    background-color: {{ block.settings.event_card_bg }};
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.event_card_radius }}px;
+    padding: 15px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .ai-events-calendar__event-card-{{ ai_gen_id }}:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .ai-events-calendar__event-date-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ block.settings.event_date_color }};
+    margin-bottom: 8px;
+  }
+
+  .ai-events-calendar__event-title-{{ ai_gen_id }} {
+    font-size: 18px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+    margin-bottom: 8px;
+  }
+
+  .ai-events-calendar__event-meta-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: {{ block.settings.event_description_color }};
+  }
+
+  .ai-events-calendar__event-time-{{ ai_gen_id }}::before {
+    content: '🕒 ';
+    margin-right: 4px;
+  }
+
+  .ai-events-calendar__event-location-{{ ai_gen_id }}::before {
+    content: '📍 ';
+    margin-right: 4px;
+  }
+
+  .ai-events-calendar__event-description-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ block.settings.event_description_color }};
+    line-height: 1.5;
+  }
+
+  .ai-events-calendar__no-events-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 40px 20px;
+    color: {{ block.settings.event_description_color }};
+    font-style: italic;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-events-calendar__grid-{{ ai_gen_id }} {
+      gap: {{ block.settings.grid_gap | divided_by: 2 }}px;
+      margin: 0 5px 20px 5px;
+    }
+
+    .ai-events-calendar__header-{{ ai_gen_id }} {
+      margin: 0 5px 20px 5px;
+    }
+
+    .ai-events-calendar__events-list-{{ ai_gen_id }} {
+      margin: 20px 5px 0 5px;
+    }
+
+    .ai-events-calendar__day-{{ ai_gen_id }} {
+      max-width: 60px;
+    }
+
+    .ai-events-calendar__day-number-{{ ai_gen_id }} {
+      font-size: 12px;
+    }
+
+    .ai-events-calendar__current-month-{{ ai_gen_id }} {
+      font-size: 14px;
+      min-width: 110px;
+    }
+
+    .ai-events-calendar__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<events-calendar-{{ ai_gen_id }}
+  class="ai-events-calendar-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-events-calendar__header-{{ ai_gen_id }}">
+    {% if block.settings.calendar_title != blank %}
+      <h2 class="ai-events-calendar__title-{{ ai_gen_id }}">{{ block.settings.calendar_title }}</h2>
+    {% endif %}
+    <div class="ai-events-calendar__nav-{{ ai_gen_id }}">
+      <button
+        class="ai-events-calendar__nav-button-{{ ai_gen_id }}"
+        data-action="prev"
+        aria-label="Previous month"
+      >
+        ←
+      </button>
+      <div class="ai-events-calendar__current-month-{{ ai_gen_id }}" data-current-month></div>
+      <button
+        class="ai-events-calendar__nav-button-{{ ai_gen_id }}"
+        data-action="next"
+        aria-label="Next month"
+      >
+        →
+      </button>
+    </div>
+  </div>
+
+  <div class="ai-events-calendar__grid-{{ ai_gen_id }}" data-calendar-grid></div>
+
+  <div class="ai-events-calendar__events-list-{{ ai_gen_id }}">
+    <h3 class="ai-events-calendar__events-title-{{ ai_gen_id }}">{{ block.settings.events_list_title }}</h3>
+    <div data-events-container></div>
+  </div>
+</events-calendar-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class EventsCalendar{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.currentDate = new Date();
+        this.events = this.parseEvents();
+        this.selectedDate = null;
+        this.handleSectionLoad = this.handleSectionLoad.bind(this);
+      }
+
+      connectedCallback() {
+        this.calendarGrid = this.querySelector('[data-calendar-grid]');
+        this.currentMonthDisplay = this.querySelector('[data-current-month]');
+        this.eventsContainer = this.querySelector('[data-events-container]');
+        this.prevButton = this.querySelector('[data-action="prev"]');
+        this.nextButton = this.querySelector('[data-action="next"]');
+
+        this.prevButton.addEventListener('click', () => this.changeMonth(-1));
+        this.nextButton.addEventListener('click', () => this.changeMonth(1));
+
+        // Listen for Shopify theme editor events
+        document.addEventListener('shopify:section:load', this.handleSectionLoad);
+        document.addEventListener('shopify:section:rerender', this.handleSectionLoad);
+
+        this.render();
+      }
+
+      disconnectedCallback() {
+        // Clean up event listeners
+        document.removeEventListener('shopify:section:load', this.handleSectionLoad);
+        document.removeEventListener('shopify:section:rerender', this.handleSectionLoad);
+      }
+
+      handleSectionLoad(event) {
+        // Check if this event is for our section
+        if (event.target.contains(this)) {
+          this.refreshCalendar();
+        }
+      }
+
+      refreshCalendar() {
+        // Re-parse events from the updated DOM
+        this.events = this.parseEvents();
+        this.render();
+      }
+
+      parseEvents() {
+        const events = [];
+        {% for i in (1..25) %}
+          {% assign event_enabled_key = 'event_' | append: i | append: '_enabled' %}
+          {% assign event_date_key = 'event_' | append: i | append: '_date' %}
+          {% assign event_title_key = 'event_' | append: i | append: '_title' %}
+          {% assign event_description_key = 'event_' | append: i | append: '_description' %}
+          {% assign event_time_key = 'event_' | append: i | append: '_time' %}
+          {% assign event_location_key = 'event_' | append: i | append: '_location' %}
+
+          {% if block.settings[event_enabled_key] and block.settings[event_date_key] != blank %}
+            events.push({
+              date: '{{ block.settings[event_date_key] }}',
+              title: {{ block.settings[event_title_key] | json }},
+              description: {{ block.settings[event_description_key] | json }},
+              time: {{ block.settings[event_time_key] | json }},
+              location: {{ block.settings[event_location_key] | json }}
+            });
+          {% endif %}
+        {% endfor %}
+        return events;
+      }
+
+      changeMonth(direction) {
+        this.currentDate.setMonth(this.currentDate.getMonth() + direction);
+        this.render();
+      }
+
+      render() {
+        this.renderCalendar();
+        this.renderEvents();
+      }
+
+      renderCalendar() {
+        const year = this.currentDate.getFullYear();
+        const month = this.currentDate.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const prevLastDay = new Date(year, month, 0);
+        const firstDayOfWeek = firstDay.getDay();
+        const lastDate = lastDay.getDate();
+        const prevLastDate = prevLastDay.getDate();
+
+        this.currentMonthDisplay.textContent = firstDay.toLocaleDateString('en-US', {
+          month: 'long',
+          year: 'numeric'
+        });
+
+        let html = '';
+        const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        dayHeaders.forEach(day => {
+          html += `<div class="ai-events-calendar__day-header-{{ ai_gen_id }}">${day}</div>`;
+        });
+
+        for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+          const day = prevLastDate - i;
+          html += this.renderDay(day, true, year, month - 1);
+        }
+
+        for (let day = 1; day <= lastDate; day++) {
+          html += this.renderDay(day, false, year, month);
+        }
+
+        const remainingDays = 42 - (firstDayOfWeek + lastDate);
+        for (let day = 1; day <= remainingDays; day++) {
+          html += this.renderDay(day, true, year, month + 1);
+        }
+
+        this.calendarGrid.innerHTML = html;
+
+        this.calendarGrid.querySelectorAll('.ai-events-calendar__day-{{ ai_gen_id }}').forEach(dayEl => {
+          dayEl.addEventListener('click', (e) => {
+            const dateStr = e.currentTarget.dataset.date;
+            if (dateStr && !e.currentTarget.classList.contains('other-month')) {
+              this.selectedDate = dateStr;
+              this.renderEvents();
+            }
+          });
+        });
+      }
+
+      renderDay(day, isOtherMonth, year, month) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const today = new Date();
+        const isToday = dateStr === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const dayEvents = this.events.filter(event => event.date === dateStr);
+        const hasEvent = dayEvents.length > 0;
+
+        let classes = 'ai-events-calendar__day-{{ ai_gen_id }}';
+        if (isOtherMonth) classes += ' other-month';
+        if (isToday) classes += ' today';
+        if (hasEvent) classes += ' has-event';
+
+        let previewHTML = '';
+        if (hasEvent && !isOtherMonth) {
+          const event = dayEvents[0]; // Show first event in preview
+          previewHTML = `
+            <div class="ai-events-calendar__event-preview-{{ ai_gen_id }}">
+              <div class="ai-events-calendar__preview-title-{{ ai_gen_id }}">${this.escapeHtml(event.title || '')}</div>
+              ${event.time ? `<div class="ai-events-calendar__preview-time-{{ ai_gen_id }}">${this.escapeHtml(event.time)}</div>` : ''}
+              ${event.location ? `<div class="ai-events-calendar__preview-location-{{ ai_gen_id }}">${this.escapeHtml(event.location)}</div>` : ''}
+              ${dayEvents.length > 1 ? `<div style="font-size: 11px; margin-top: 6px; opacity: 0.8;">+${dayEvents.length - 1} more event${dayEvents.length > 2 ? 's' : ''}</div>` : ''}
+            </div>
+          `;
+        }
+
+        return `
+          <div class="${classes}" data-date="${dateStr}">
+            <div class="ai-events-calendar__day-number-{{ ai_gen_id }}">${day}</div>
+            ${hasEvent ? '<div class="ai-events-calendar__event-indicator-{{ ai_gen_id }}"></div>' : ''}
+            ${previewHTML}
+          </div>
+        `;
+      }
+
+      escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      renderEvents() {
+        let eventsToShow = this.events;
+
+        if (this.selectedDate) {
+          eventsToShow = this.events.filter(event => event.date === this.selectedDate);
+        } else {
+          const year = this.currentDate.getFullYear();
+          const month = this.currentDate.getMonth();
+          eventsToShow = this.events.filter(event => {
+            const eventDate = new Date(event.date);
+            return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+          });
+        }
+
+        eventsToShow.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        if (eventsToShow.length === 0) {
+          this.eventsContainer.innerHTML = `
+            <div class="ai-events-calendar__no-events-{{ ai_gen_id }}">
+              ${this.selectedDate ? 'No events on this date' : 'No events this month'}
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        eventsToShow.forEach(event => {
+          const eventDate = new Date(event.date);
+          const formattedDate = eventDate.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+
+          const metaHTML = (event.time || event.location) ? `
+            <div class="ai-events-calendar__event-meta-{{ ai_gen_id }}">
+              ${event.time ? `<div class="ai-events-calendar__event-time-{{ ai_gen_id }}">${event.time}</div>` : ''}
+              ${event.location ? `<div class="ai-events-calendar__event-location-{{ ai_gen_id }}">${event.location}</div>` : ''}
+            </div>
+          ` : '';
+
+          html += `
+            <div class="ai-events-calendar__event-card-{{ ai_gen_id }}">
+              <div class="ai-events-calendar__event-date-{{ ai_gen_id }}">${formattedDate}</div>
+              <div class="ai-events-calendar__event-title-{{ ai_gen_id }}">${event.title}</div>
+              ${metaHTML}
+              ${event.description ? `<div class="ai-events-calendar__event-description-{{ ai_gen_id }}">${event.description}</div>` : ''}
+            </div>
+          `;
+        });
+
+        this.eventsContainer.innerHTML = html;
+      }
+    }
+
+    customElements.define('events-calendar-{{ ai_gen_id }}', EventsCalendar{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Events calendar",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+      "type": "text",
+      "id": "calendar_title",
+      "label": "Calendar title",
+      "default": "Events Calendar"
+    },
+    {
+      "type": "text",
+      "id": "events_list_title",
+      "label": "Events list title",
+      "default": "Upcoming Events"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 600,
+      "max": 1400,
+      "step": 100,
+      "unit": "px",
+      "label": "Maximum width",
+      "default": 900
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#dfdfdf"
+    },
+    {
+      "type": "color",
+      "id": "day_header_color",
+      "label": "Day header",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "day_bg_color",
+      "label": "Day background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "day_hover_bg",
+      "label": "Day hover background",
+      "default": "#f1f1f1"
+    },
+    {
+      "type": "color",
+      "id": "day_hover_border",
+      "label": "Day hover border",
+      "default": "#bbbbbb"
+    },
+    {
+      "type": "color",
+      "id": "today_bg_color",
+      "label": "Today background",
+      "default": "#e67e22"
+    },
+    {
+      "type": "color",
+      "id": "today_border_color",
+      "label": "Today border",
+      "default": "#e67e22"
+    },
+    {
+      "type": "color",
+      "id": "event_day_bg",
+      "label": "Event day background",
+      "default": "#fff8f0"
+    },
+    {
+      "type": "color",
+      "id": "event_day_border",
+      "label": "Event day border",
+      "default": "#e67e22"
+    },
+    {
+      "type": "color",
+      "id": "event_indicator_color",
+      "label": "Event indicator",
+      "default": "#e67e22"
+    },
+    {
+      "type": "color",
+      "id": "event_card_bg",
+      "label": "Event card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "event_date_color",
+      "label": "Event date",
+      "default": "#e67e22"
+    },
+    {
+      "type": "color",
+      "id": "event_description_color",
+      "label": "Event description",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Navigation buttons"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_border",
+      "label": "Border",
+      "default": "#dfdfdf"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_hover_bg",
+      "label": "Hover background",
+      "default": "#e67e22"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_hover_color",
+      "label": "Hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Grid gap",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "day_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Day border radius",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "event_card_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Event card radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Event 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_1_enabled",
+      "label": "Enable event",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "event_1_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_1_title",
+      "label": "Title",
+      "default": "Coffee Tasting Event"
+    },
+    {
+      "type": "textarea",
+      "id": "event_1_description",
+      "label": "Description",
+      "default": "Join us for an exclusive coffee tasting experience featuring our latest roasts."
+    },
+    {
+      "type": "text",
+      "id": "event_1_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_1_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_2_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_2_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_2_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_2_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_2_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_2_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_3_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_3_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_3_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_3_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_3_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_3_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_4_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_4_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_4_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_4_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_4_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_4_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_5_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_5_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_5_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_5_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_5_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_5_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_6_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_6_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_6_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_6_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_6_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_6_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 7"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_7_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_7_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_7_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_7_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_7_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_7_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 8"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_8_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_8_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_8_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_8_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_8_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_8_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 9"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_9_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_9_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_9_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_9_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_9_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_9_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 10"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_10_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_10_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_10_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_10_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_10_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_10_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 11"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_11_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_11_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_11_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_11_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_11_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_11_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 12"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_12_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_12_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_12_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_12_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_12_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_12_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 13"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_13_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_13_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_13_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_13_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_13_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_13_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 14"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_14_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_14_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_14_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_14_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_14_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_14_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 15"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_15_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_15_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_15_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_15_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_15_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_15_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 16"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_16_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_16_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_16_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_16_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_16_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_16_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 17"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_17_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_17_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_17_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_17_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_17_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_17_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 18"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_18_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_18_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_18_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_18_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_18_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_18_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 19"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_19_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_19_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_19_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_19_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_19_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_19_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 20"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_20_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_20_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_20_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_20_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_20_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_20_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 21"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_21_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_21_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_21_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_21_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_21_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_21_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 22"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_22_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_22_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_22_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_22_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_22_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_22_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 23"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_23_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_23_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_23_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_23_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_23_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_23_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 24"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_24_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_24_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_24_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_24_description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_24_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_24_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
+      "type": "header",
+      "content": "Event 25"
+    },
+    {
+      "type": "checkbox",
+      "id": "event_25_enabled",
+      "label": "Enable event",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "event_25_date",
+      "label": "Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-15)"
+    },
+    {
+      "type": "text",
+      "id": "event_25_title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "event_25_description",
+      "label": "Description"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Events calendar"
+    }
+  ]
+}
+{% endschema %}
