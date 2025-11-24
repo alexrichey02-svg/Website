@@ -240,6 +240,7 @@
         this.currentDate = new Date();
         this.events = this.parseEvents();
         this.selectedDate = null;
+        this.handleSectionLoad = this.handleSectionLoad.bind(this);
       }
 
       connectedCallback() {
@@ -252,6 +253,29 @@
         this.prevButton.addEventListener('click', () => this.changeMonth(-1));
         this.nextButton.addEventListener('click', () => this.changeMonth(1));
 
+        // Listen for Shopify theme editor events
+        document.addEventListener('shopify:section:load', this.handleSectionLoad);
+        document.addEventListener('shopify:section:rerender', this.handleSectionLoad);
+
+        this.render();
+      }
+
+      disconnectedCallback() {
+        // Clean up event listeners
+        document.removeEventListener('shopify:section:load', this.handleSectionLoad);
+        document.removeEventListener('shopify:section:rerender', this.handleSectionLoad);
+      }
+
+      handleSectionLoad(event) {
+        // Check if this event is for our section
+        if (event.target.contains(this)) {
+          this.refreshCalendar();
+        }
+      }
+
+      refreshCalendar() {
+        // Re-parse events from the updated DOM
+        this.events = this.parseEvents();
         this.render();
       }
 
