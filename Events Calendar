@@ -121,6 +121,65 @@
     bottom: 8px;
   }
 
+  .ai-events-calendar__event-preview-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background-color: {{ block.settings.text_color }};
+    color: {{ block.settings.background_color }};
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    min-width: 200px;
+    max-width: 300px;
+    white-space: normal;
+  }
+
+  .ai-events-calendar__day-{{ ai_gen_id }}:hover .ai-events-calendar__event-preview-{{ ai_gen_id }} {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-12px);
+  }
+
+  .ai-events-calendar__event-preview-{{ ai_gen_id }}::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: {{ block.settings.text_color }};
+  }
+
+  .ai-events-calendar__preview-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .ai-events-calendar__preview-time-{{ ai_gen_id }},
+  .ai-events-calendar__preview-location-{{ ai_gen_id }} {
+    font-size: 12px;
+    margin-bottom: 4px;
+    opacity: 0.9;
+    line-height: 1.3;
+  }
+
+  .ai-events-calendar__preview-time-{{ ai_gen_id }}::before {
+    content: '🕒 ';
+    margin-right: 4px;
+  }
+
+  .ai-events-calendar__preview-location-{{ ai_gen_id }}::before {
+    content: '📍 ';
+    margin-right: 4px;
+  }
+
   .ai-events-calendar__events-list-{{ ai_gen_id }} {
     margin-top: 30px;
   }
@@ -158,6 +217,25 @@
     font-weight: 600;
     color: {{ block.settings.text_color }};
     margin-bottom: 8px;
+  }
+
+  .ai-events-calendar__event-meta-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: {{ block.settings.event_description_color }};
+  }
+
+  .ai-events-calendar__event-time-{{ ai_gen_id }}::before {
+    content: '🕒 ';
+    margin-right: 4px;
+  }
+
+  .ai-events-calendar__event-location-{{ ai_gen_id }}::before {
+    content: '📍 ';
+    margin-right: 4px;
   }
 
   .ai-events-calendar__event-description-{{ ai_gen_id }} {
@@ -286,12 +364,16 @@
           {% assign event_date_key = 'event_' | append: i | append: '_date' %}
           {% assign event_title_key = 'event_' | append: i | append: '_title' %}
           {% assign event_description_key = 'event_' | append: i | append: '_description' %}
+          {% assign event_time_key = 'event_' | append: i | append: '_time' %}
+          {% assign event_location_key = 'event_' | append: i | append: '_location' %}
 
           {% if block.settings[event_enabled_key] and block.settings[event_date_key] != blank %}
             events.push({
               date: '{{ block.settings[event_date_key] }}',
               title: {{ block.settings[event_title_key] | json }},
-              description: {{ block.settings[event_description_key] | json }}
+              description: {{ block.settings[event_description_key] | json }},
+              time: {{ block.settings[event_time_key] | json }},
+              location: {{ block.settings[event_location_key] | json }}
             });
           {% endif %}
         {% endfor %}
@@ -360,19 +442,41 @@
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const today = new Date();
         const isToday = dateStr === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        const hasEvent = this.events.some(event => event.date === dateStr);
+        const dayEvents = this.events.filter(event => event.date === dateStr);
+        const hasEvent = dayEvents.length > 0;
 
         let classes = 'ai-events-calendar__day-{{ ai_gen_id }}';
         if (isOtherMonth) classes += ' other-month';
         if (isToday) classes += ' today';
         if (hasEvent) classes += ' has-event';
 
+        let previewHTML = '';
+        if (hasEvent && !isOtherMonth) {
+          const event = dayEvents[0]; // Show first event in preview
+          previewHTML = `
+            <div class="ai-events-calendar__event-preview-{{ ai_gen_id }}">
+              <div class="ai-events-calendar__preview-title-{{ ai_gen_id }}">${this.escapeHtml(event.title || '')}</div>
+              ${event.time ? `<div class="ai-events-calendar__preview-time-{{ ai_gen_id }}">${this.escapeHtml(event.time)}</div>` : ''}
+              ${event.location ? `<div class="ai-events-calendar__preview-location-{{ ai_gen_id }}">${this.escapeHtml(event.location)}</div>` : ''}
+              ${dayEvents.length > 1 ? `<div style="font-size: 11px; margin-top: 6px; opacity: 0.8;">+${dayEvents.length - 1} more event${dayEvents.length > 2 ? 's' : ''}</div>` : ''}
+            </div>
+          `;
+        }
+
         return `
           <div class="${classes}" data-date="${dateStr}">
             <div class="ai-events-calendar__day-number-{{ ai_gen_id }}">${day}</div>
             ${hasEvent ? '<div class="ai-events-calendar__event-indicator-{{ ai_gen_id }}"></div>' : ''}
+            ${previewHTML}
           </div>
         `;
+      }
+
+      escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
       }
 
       renderEvents() {
@@ -410,10 +514,18 @@
             day: 'numeric'
           });
 
+          const metaHTML = (event.time || event.location) ? `
+            <div class="ai-events-calendar__event-meta-{{ ai_gen_id }}">
+              ${event.time ? `<div class="ai-events-calendar__event-time-{{ ai_gen_id }}">${event.time}</div>` : ''}
+              ${event.location ? `<div class="ai-events-calendar__event-location-{{ ai_gen_id }}">${event.location}</div>` : ''}
+            </div>
+          ` : '';
+
           html += `
             <div class="ai-events-calendar__event-card-{{ ai_gen_id }}">
               <div class="ai-events-calendar__event-date-{{ ai_gen_id }}">${formattedDate}</div>
               <div class="ai-events-calendar__event-title-{{ ai_gen_id }}">${event.title}</div>
+              ${metaHTML}
               ${event.description ? `<div class="ai-events-calendar__event-description-{{ ai_gen_id }}">${event.description}</div>` : ''}
             </div>
           `;
@@ -703,6 +815,18 @@
       "default": "Join us for an exclusive coffee tasting experience featuring our latest roasts."
     },
     {
+      "type": "text",
+      "id": "event_1_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_1_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 2"
     },
@@ -727,6 +851,18 @@
       "type": "textarea",
       "id": "event_2_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_2_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_2_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -755,6 +891,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_3_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_3_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 4"
     },
@@ -779,6 +927,18 @@
       "type": "textarea",
       "id": "event_4_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_4_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_4_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -807,6 +967,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_5_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_5_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 6"
     },
@@ -831,6 +1003,18 @@
       "type": "textarea",
       "id": "event_6_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_6_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_6_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -859,6 +1043,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_7_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_7_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 8"
     },
@@ -883,6 +1079,18 @@
       "type": "textarea",
       "id": "event_8_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_8_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_8_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -911,6 +1119,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_9_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_9_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 10"
     },
@@ -935,6 +1155,18 @@
       "type": "textarea",
       "id": "event_10_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_10_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_10_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -963,6 +1195,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_11_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_11_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 12"
     },
@@ -987,6 +1231,18 @@
       "type": "textarea",
       "id": "event_12_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_12_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_12_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -1015,6 +1271,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_13_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_13_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 14"
     },
@@ -1039,6 +1307,18 @@
       "type": "textarea",
       "id": "event_14_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_14_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_14_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -1067,6 +1347,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_15_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_15_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 16"
     },
@@ -1091,6 +1383,18 @@
       "type": "textarea",
       "id": "event_16_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_16_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_16_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -1119,6 +1423,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_17_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_17_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 18"
     },
@@ -1143,6 +1459,18 @@
       "type": "textarea",
       "id": "event_18_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_18_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_18_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -1171,6 +1499,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_19_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_19_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 20"
     },
@@ -1195,6 +1535,18 @@
       "type": "textarea",
       "id": "event_20_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_20_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_20_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -1223,6 +1575,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_21_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_21_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 22"
     },
@@ -1247,6 +1611,18 @@
       "type": "textarea",
       "id": "event_22_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_22_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_22_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
@@ -1275,6 +1651,18 @@
       "label": "Description"
     },
     {
+      "type": "text",
+      "id": "event_23_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_23_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
+    },
+    {
       "type": "header",
       "content": "Event 24"
     },
@@ -1299,6 +1687,18 @@
       "type": "textarea",
       "id": "event_24_description",
       "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "event_24_time",
+      "label": "Time",
+      "info": "e.g., 2:00 PM - 4:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "event_24_location",
+      "label": "Location",
+      "info": "e.g., Main Store, 123 Coffee St."
     },
     {
       "type": "header",
