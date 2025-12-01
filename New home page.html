@@ -331,6 +331,167 @@
             color: #666666;
         }
 
+        /* Subscribe Section */
+        .subscribe-section {
+            padding: 80px 60px;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 80px;
+            overflow: hidden;
+        }
+
+        .subscribe-content {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .subscribe-content h2 {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            color: #000000;
+        }
+
+        .subscribe-content p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #666666;
+            margin-bottom: 32px;
+        }
+
+        .subscribe-form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .subscribe-input {
+            flex: 1;
+            padding: 16px 24px;
+            border: 2px solid #dfdfdf;
+            border-radius: 50px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .subscribe-input:focus {
+            border-color: #e67e22;
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+        }
+
+        .subscribe-btn {
+            background-color: #e67e22;
+            color: #ffffff;
+            border: none;
+            padding: 16px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+            white-space: nowrap;
+        }
+
+        .subscribe-btn:hover {
+            background-color: #d35400;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(230, 126, 34, 0.4);
+        }
+
+        .privacy-text {
+            font-size: 12px;
+            color: #666666;
+            font-style: italic;
+        }
+
+        /* Vertical Product Scroll */
+        .product-scroll-container {
+            flex: 1;
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            background-color: #fff8f0;
+            border-radius: 24px;
+            padding: 30px;
+        }
+
+        .product-scroll-track {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: verticalScroll 20s linear infinite;
+        }
+
+        .product-scroll-track:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes verticalScroll {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-50%);
+            }
+        }
+
+        .scroll-product-card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            min-height: 140px;
+        }
+
+        .scroll-product-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .scroll-product-image {
+            width: 90px;
+            height: 90px;
+            background-color: #f5f5f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            flex-shrink: 0;
+        }
+
+        .scroll-product-info {
+            flex: 1;
+        }
+
+        .scroll-product-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #000000;
+        }
+
+        .scroll-product-info .description {
+            font-size: 14px;
+            color: #666666;
+            margin-bottom: 8px;
+        }
+
+        .scroll-product-info .price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e67e22;
+        }
+
         /* Responsive Design */
         @media (max-width: 1024px) {
             main {
@@ -356,6 +517,21 @@
             .floating-product.bottom-left {
                 left: auto;
                 right: 40px;
+            }
+
+            .subscribe-section {
+                flex-direction: column;
+                padding: 60px 40px;
+                gap: 50px;
+            }
+
+            .subscribe-content {
+                max-width: 100%;
+            }
+
+            .product-scroll-container {
+                width: 100%;
+                height: 400px;
             }
         }
 
@@ -408,6 +584,55 @@
 
             .floating-product {
                 display: none;
+            }
+
+            .subscribe-section {
+                padding: 40px 20px;
+                gap: 40px;
+            }
+
+            .subscribe-content h2 {
+                font-size: 32px;
+            }
+
+            .subscribe-content p {
+                font-size: 16px;
+            }
+
+            .subscribe-form {
+                flex-direction: column;
+            }
+
+            .subscribe-btn {
+                width: 100%;
+            }
+
+            .product-scroll-container {
+                height: 350px;
+                padding: 20px;
+            }
+
+            .scroll-product-card {
+                padding: 16px;
+                min-height: 120px;
+            }
+
+            .scroll-product-image {
+                width: 70px;
+                height: 70px;
+                font-size: 36px;
+            }
+
+            .scroll-product-info h3 {
+                font-size: 16px;
+            }
+
+            .scroll-product-info .description {
+                font-size: 12px;
+            }
+
+            .scroll-product-info .price {
+                font-size: 18px;
             }
         }
     </style>
@@ -484,6 +709,141 @@
         <button class="arrow-btn" aria-label="Scroll Down">↓</button>
     </div>
 
+    <!-- Subscribe Section -->
+    <section class="subscribe-section">
+        <div class="subscribe-content">
+            <h2>Nunca perca uma <span class="highlight">oferta especial!</span></h2>
+            <p>Inscreva-se na nossa newsletter e receba novidades exclusivas, receitas deliciosas e descontos especiais diretamente no seu email.</p>
+
+            <form class="subscribe-form" id="subscribeForm">
+                <input
+                    type="email"
+                    class="subscribe-input"
+                    placeholder="Seu melhor email"
+                    required
+                    aria-label="Email address"
+                />
+                <button type="submit" class="subscribe-btn">INSCREVER</button>
+            </form>
+
+            <p class="privacy-text">Seus dados estão seguros conosco. Não compartilhamos informações com terceiros.</p>
+        </div>
+
+        <div class="product-scroll-container">
+            <div class="product-scroll-track" id="productScrollTrack">
+                <!-- Products - duplicated for infinite scroll -->
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🌽</div>
+                    <div class="scroll-product-info">
+                        <h3>Milho Premium</h3>
+                        <p class="description">Grãos selecionados de alta qualidade</p>
+                        <p class="price">R$ 18,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🍄</div>
+                    <div class="scroll-product-info">
+                        <h3>Milho Mushroom</h3>
+                        <p class="description">500g de milho natural premium</p>
+                        <p class="price">R$ 25,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🧈</div>
+                    <div class="scroll-product-info">
+                        <h3>Manteiga Especial</h3>
+                        <p class="description">Sabor autêntico de cinema</p>
+                        <p class="price">R$ 15,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🧂</div>
+                    <div class="scroll-product-info">
+                        <h3>Sal Gourmet</h3>
+                        <p class="description">Tempero perfeito para pipoca</p>
+                        <p class="price">R$ 12,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🍫</div>
+                    <div class="scroll-product-info">
+                        <h3>Chocolate Especial</h3>
+                        <p class="description">Cobertura premium belga</p>
+                        <p class="price">R$ 22,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🌶️</div>
+                    <div class="scroll-product-info">
+                        <h3>Pimenta Picante</h3>
+                        <p class="description">Para quem gosta de aventura</p>
+                        <p class="price">R$ 14,00</p>
+                    </div>
+                </div>
+
+                <!-- Duplicate products for seamless loop -->
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🌽</div>
+                    <div class="scroll-product-info">
+                        <h3>Milho Premium</h3>
+                        <p class="description">Grãos selecionados de alta qualidade</p>
+                        <p class="price">R$ 18,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🍄</div>
+                    <div class="scroll-product-info">
+                        <h3>Milho Mushroom</h3>
+                        <p class="description">500g de milho natural premium</p>
+                        <p class="price">R$ 25,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🧈</div>
+                    <div class="scroll-product-info">
+                        <h3>Manteiga Especial</h3>
+                        <p class="description">Sabor autêntico de cinema</p>
+                        <p class="price">R$ 15,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🧂</div>
+                    <div class="scroll-product-info">
+                        <h3>Sal Gourmet</h3>
+                        <p class="description">Tempero perfeito para pipoca</p>
+                        <p class="price">R$ 12,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🍫</div>
+                    <div class="scroll-product-info">
+                        <h3>Chocolate Especial</h3>
+                        <p class="description">Cobertura premium belga</p>
+                        <p class="price">R$ 22,00</p>
+                    </div>
+                </div>
+
+                <div class="scroll-product-card">
+                    <div class="scroll-product-image">🌶️</div>
+                    <div class="scroll-product-info">
+                        <h3>Pimenta Picante</h3>
+                        <p class="description">Para quem gosta de aventura</p>
+                        <p class="price">R$ 14,00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer>
         <div class="footer-love">nós <span class="heart">♥</span> pipoca</div>
@@ -539,6 +899,28 @@
                 const speed = (index + 1) * 0.5;
                 product.style.transform = `translateY(${scrolled * speed}px)`;
             });
+        });
+
+        // Subscribe form handling
+        const subscribeForm = document.getElementById('subscribeForm');
+        subscribeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const emailInput = subscribeForm.querySelector('.subscribe-input');
+            const email = emailInput.value;
+
+            // Show success message
+            const submitBtn = subscribeForm.querySelector('.subscribe-btn');
+            const originalText = submitBtn.textContent;
+
+            submitBtn.textContent = '✓ INSCRITO!';
+            submitBtn.style.backgroundColor = '#27ae60';
+
+            // Reset after 3 seconds
+            setTimeout(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.style.backgroundColor = '#e67e22';
+                emailInput.value = '';
+            }, 3000);
         });
     </script>
 </body>
