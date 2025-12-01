@@ -139,6 +139,7 @@
   .ai-split-section__product-image-{{ ai_gen_id }} {
     width: 100%;
     margin-bottom: {{ block.settings.product_spacing }}px;
+    position: relative;
   }
 
   .ai-split-section__product-image-{{ ai_gen_id }} img {
@@ -192,18 +193,20 @@
   }
 
   .ai-split-section__product-actions-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
     display: flex;
-    gap: 12px;
-    justify-content: center;
+    gap: 8px;
     align-items: center;
   }
 
   .ai-split-section__product-button-{{ ai_gen_id }} {
-    width: {{ block.settings.product_button_size }}px;
-    height: {{ block.settings.product_button_size }}px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background-color: {{ block.settings.product_button_background_color }};
-    color: {{ block.settings.product_button_text_color }};
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
     border: none;
     cursor: pointer;
     display: flex;
@@ -211,40 +214,42 @@
     justify-content: center;
     transition: background-color 0.3s ease, transform 0.2s ease;
     text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   .ai-split-section__product-button-{{ ai_gen_id }}:hover {
-    background-color: {{ block.settings.product_button_hover_color }};
-    transform: scale(1.05);
+    background-color: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
   }
 
   .ai-split-section__product-button-{{ ai_gen_id }} svg {
-    width: {{ block.settings.product_button_icon_size }}px;
-    height: {{ block.settings.product_button_icon_size }}px;
+    width: 16px;
+    height: 16px;
   }
 
   .ai-split-section__add-to-cart-button-{{ ai_gen_id }} {
-    width: {{ block.settings.add_to_cart_button_size }}px;
-    height: {{ block.settings.add_to_cart_button_size }}px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background-color: {{ block.settings.add_to_cart_button_background }};
-    color: {{ block.settings.add_to_cart_button_color }};
+    background-color: rgba(230, 126, 34, 0.9);
+    color: #ffffff;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   .ai-split-section__add-to-cart-button-{{ ai_gen_id }}:hover {
-    background-color: {{ block.settings.add_to_cart_button_hover }};
-    transform: scale(1.05);
+    background-color: rgba(211, 84, 0, 1);
+    transform: scale(1.1);
   }
 
   .ai-split-section__add-to-cart-button-{{ ai_gen_id }} svg {
-    width: {{ block.settings.add_to_cart_icon_size }}px;
-    height: {{ block.settings.add_to_cart_icon_size }}px;
+    width: 16px;
+    height: 16px;
   }
 
   .ai-split-section__empty-state-{{ ai_gen_id }} {
@@ -357,24 +362,6 @@
                         {{ 'product-1' | placeholder_svg_tag }}
                       </div>
                     {% endif %}
-                  </div>
-
-                  <div class="ai-split-section__product-info-{{ ai_gen_id }}">
-                    {% if block.settings.show_product_title %}
-                      <h3 class="ai-split-section__product-title-{{ ai_gen_id }}">{{ product.title }}</h3>
-                    {% endif %}
-
-                    {% if block.settings.show_product_price %}
-                      <div class="ai-split-section__product-price-{{ ai_gen_id }}">
-                        {{ product.price | money }}
-                      </div>
-                    {% endif %}
-
-                    {% if block.settings.show_product_description and product.description != blank %}
-                      <div class="ai-split-section__product-description-{{ ai_gen_id }}">
-                        {{ product.description | strip_html | truncate: 150 }}
-                      </div>
-                    {% endif %}
 
                     <div class="ai-split-section__product-actions-{{ ai_gen_id }}">
                       {% if block.settings.show_add_to_cart %}
@@ -405,6 +392,24 @@
                         </a>
                       {% endif %}
                     </div>
+                  </div>
+
+                  <div class="ai-split-section__product-info-{{ ai_gen_id }}">
+                    {% if block.settings.show_product_title %}
+                      <h3 class="ai-split-section__product-title-{{ ai_gen_id }}">{{ product.title }}</h3>
+                    {% endif %}
+
+                    {% if block.settings.show_product_price %}
+                      <div class="ai-split-section__product-price-{{ ai_gen_id }}">
+                        {{ product.price | money }}
+                      </div>
+                    {% endif %}
+
+                    {% if block.settings.show_product_description and product.description != blank %}
+                      <div class="ai-split-section__product-description-{{ ai_gen_id }}">
+                        {{ product.description | strip_html | truncate: 150 }}
+                      </div>
+                    {% endif %}
                   </div>
                 </div>
               {% endif %}
