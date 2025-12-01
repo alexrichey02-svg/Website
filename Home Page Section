@@ -502,12 +502,12 @@
 
       calculateContainerHeight() {
         if (this.productItems.length === 0) return;
-        
+
         const firstItem = this.productItems[0];
         const itemHeight = firstItem.offsetHeight;
         const gap = {{ block.settings.product_spacing }};
-        
-        this.containerHeight = itemHeight + (gap * 2);
+
+        this.containerHeight = itemHeight * 2 + gap;
         this.scrollContainer.style.height = `${this.containerHeight}px`;
       }
 
@@ -529,16 +529,16 @@
         if (this.productItems.length === 0) return;
 
         this.isScrolling = true;
-        
+
         const firstItem = this.productItems[0];
         const itemHeight = firstItem.offsetHeight;
         const gap = {{ block.settings.product_spacing }};
-        const halfItemHeight = itemHeight / 2;
-        
-        const scrollDistance = (itemHeight + gap) * this.currentIndex - halfItemHeight;
-        
+        const centerOffset = (this.containerHeight - itemHeight) / 2;
+
+        const scrollDistance = (itemHeight + gap) * this.currentIndex - centerOffset;
+
         this.scrollWrapper.style.transform = `translateY(-${scrollDistance}px)`;
-        
+
         this.productItems.forEach((item, index) => {
           if (index === this.currentIndex) {
             item.classList.add('active');
@@ -546,7 +546,7 @@
             item.classList.remove('active');
           }
         });
-        
+
         this.updateButtons();
 
         setTimeout(() => {
