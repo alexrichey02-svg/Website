@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clube da Pipoca - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #fff8f0;
+            color: #000000;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 60px;
+            background-color: #fff8f0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #ffffff;
+            border: 3px solid #000000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        nav {
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #000000;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #e67e22;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #000000;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            color: #e67e22;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #e67e22;
+            color: #ffffff;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        main {
+            padding: 60px 60px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: calc(100vh - 200px);
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 550px;
+            z-index: 2;
+        }
+
+        .hero-content h1 {
+            font-size: 56px;
+            line-height: 1.2;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .highlight {
+            background-color: #ffd54f;
+            padding: 0 8px;
+            display: inline-block;
+        }
+
+        .explore-btn {
+            background-color: #e67e22;
+            color: #ffffff;
+            border: none;
+            padding: 16px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+        }
+
+        .explore-btn:hover {
+            background-color: #d35400;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(230, 126, 34, 0.4);
+        }
+
+        .explore-btn::after {
+            content: '→';
+            font-size: 20px;
+        }
+
+        /* Products Section */
+        .products-showcase {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            z-index: 2;
+        }
+
+        .product-card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            max-width: 200px;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-image-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            border-radius: 12px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .product-weight {
+            font-size: 12px;
+            color: #666666;
+            margin-bottom: 12px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 16px;
+        }
+
+        .add-to-cart-btn {
+            background-color: #e67e22;
+            color: #ffffff;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #d35400;
+            transform: scale(1.1);
+        }
+
+        .product-large {
+            width: 180px;
+            height: auto;
+            position: relative;
+        }
+
+        .product-large img {
+            width: 100%;
+            height: auto;
+        }
+
+        .floating-product {
+            position: absolute;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-product.top-right {
+            top: -20px;
+            right: 100px;
+            width: 140px;
+        }
+
+        .floating-product.bottom-left {
+            bottom: 60px;
+            left: 620px;
+            width: 100px;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        /* Navigation Arrows */
+        .nav-arrows {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .arrow-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e67e22;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+        }
+
+        .arrow-btn:hover {
+            background-color: #d35400;
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            padding: 30px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff8f0;
+        }
+
+        .footer-love {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .footer-love .heart {
+            color: #e67e22;
+            font-size: 16px;
+        }
+
+        .footer-copyright {
+            font-size: 14px;
+            color: #666666;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            main {
+                flex-direction: column;
+                gap: 60px;
+                padding: 40px 40px;
+            }
+
+            .hero-content {
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 42px;
+            }
+
+            .products-showcase {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .floating-product.bottom-left {
+                left: auto;
+                right: 40px;
+            }
+        }
+
+        @media (max-width: 749px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            nav {
+                gap: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+
+            main {
+                padding: 30px 20px;
+            }
+
+            .hero-content h1 {
+                font-size: 32px;
+            }
+
+            .explore-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-arrows {
+                right: 20px;
+            }
+
+            .arrow-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+                text-align: center;
+            }
+
+            .floating-product {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🍿</div>
+            <div class="logo-text">
+                <div>Clube</div>
+                <div>da Pipoca</div>
+            </div>
+        </div>
+
+        <nav>
+            <a href="#milhos">milhos</a>
+            <a href="#acessorios">acessórios</a>
+            <a href="#toppings">toppings</a>
+            <a href="#blog">blog</a>
+        </nav>
+
+        <div class="header-icons">
+            <button class="icon-btn" aria-label="User Account">👤</button>
+            <button class="icon-btn" aria-label="Search">🔍</button>
+            <button class="icon-btn" aria-label="Shopping Cart">
+                🛒
+                <span class="cart-badge">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="hero-content">
+            <h1>
+                Aqui, <span class="highlight">temos tudo</span><br>
+                para a melhor<br>
+                pipoca <span class="highlight">da sua vida.</span>
+            </h1>
+            <button class="explore-btn">EXPLORE</button>
+        </div>
+
+        <div class="products-showcase">
+            <!-- Featured Product Card -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <div style="font-size: 60px;">🍄</div>
+                </div>
+                <div class="product-name">Milho<br>Mushroom</div>
+                <div class="product-weight">500g de Milho natural</div>
+                <div class="product-price">R$25,00</div>
+                <button class="add-to-cart-btn" aria-label="Add to cart">🛒</button>
+            </div>
+
+            <!-- Large Product Display -->
+            <div class="product-large">
+                <div style="font-size: 180px;">🌽</div>
+            </div>
+        </div>
+
+        <!-- Floating Products -->
+        <div class="floating-product top-right">
+            <div style="font-size: 140px;">📦</div>
+        </div>
+        <div class="floating-product bottom-left">
+            <div style="font-size: 100px;">🧴</div>
+        </div>
+    </main>
+
+    <!-- Navigation Arrows -->
+    <div class="nav-arrows">
+        <button class="arrow-btn" aria-label="Scroll Up">↑</button>
+        <button class="arrow-btn" aria-label="Scroll Down">↓</button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-love">nós <span class="heart">♥</span> pipoca</div>
+        <div class="footer-copyright">©2020 clube da pipoca</div>
+    </footer>
+
+    <script>
+        // Smooth scroll functionality for navigation arrows
+        const scrollUpBtn = document.querySelector('.nav-arrows .arrow-btn:first-child');
+        const scrollDownBtn = document.querySelector('.nav-arrows .arrow-btn:last-child');
+
+        scrollUpBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        scrollDownBtn.addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+
+        // Add to cart functionality
+        const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+        const cartBadge = document.querySelector('.cart-badge');
+        let cartCount = 0;
+
+        addToCartBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                cartCount++;
+                cartBadge.textContent = cartCount;
+
+                // Animation feedback
+                btn.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+
+        // Explore button scroll
+        const exploreBtn = document.querySelector('.explore-btn');
+        exploreBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: window.innerHeight,
+                behavior: 'smooth'
+            });
+        });
+
+        // Parallax effect for floating products
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const floatingProducts = document.querySelectorAll('.floating-product');
+
+            floatingProducts.forEach((product, index) => {
+                const speed = (index + 1) * 0.5;
+                product.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
