@@ -19,7 +19,21 @@
     justify-content: center;
     align-items: flex-start;
     padding: {{ block.settings.content_padding }}px;
-    background-color: {{ block.settings.content_background_color }};
+    background: linear-gradient(135deg, {{ block.settings.content_background_color }} 0%, {{ block.settings.content_background_color }}f5 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-split-section__content-{{ ai_gen_id }}::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(230, 126, 34, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .ai-split-section__heading-{{ ai_gen_id }} {
@@ -27,30 +41,80 @@
     color: {{ block.settings.heading_color }};
     font-size: {{ block.settings.heading_size }}px;
     line-height: 1.2;
+    font-weight: 700;
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .ai-split-section__heading-{{ ai_gen_id }}::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: linear-gradient(180deg, #e67e22 0%, #d35400 100%);
+    border-radius: 3px;
   }
 
   .ai-split-section__text-{{ ai_gen_id }} {
     margin: 0 0 {{ block.settings.text_spacing }}px 0;
     color: {{ block.settings.text_color }};
     font-size: {{ block.settings.text_size }}px;
-    line-height: 1.6;
+    line-height: 1.8;
+    max-width: 500px;
+    position: relative;
+    z-index: 1;
   }
 
   .ai-split-section__button-{{ ai_gen_id }} {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;
-    background-color: {{ block.settings.button_background_color }};
+    background: linear-gradient(135deg, {{ block.settings.button_background_color }} 0%, {{ block.settings.button_hover_color }} 100%);
     color: {{ block.settings.button_text_color }};
     text-decoration: none;
     border-radius: {{ block.settings.button_border_radius }}px;
     font-size: {{ block.settings.button_text_size }}px;
-    transition: background-color 0.3s ease;
+    font-weight: 600;
+    transition: all 0.3s ease;
     border: none;
     cursor: pointer;
+    box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .ai-split-section__button-{{ ai_gen_id }}::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
   }
 
   .ai-split-section__button-{{ ai_gen_id }}:hover {
-    background-color: {{ block.settings.button_hover_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 126, 34, 0.4);
+  }
+
+  .ai-split-section__button-{{ ai_gen_id }}:hover::before {
+    left: 100%;
+  }
+
+  .ai-split-section__button-{{ ai_gen_id }}::after {
+    content: '→';
+    font-size: 18px;
+    transition: transform 0.3s ease;
+  }
+
+  .ai-split-section__button-{{ ai_gen_id }}:hover::after {
+    transform: translateX(4px);
   }
 
   .ai-split-section__product-{{ ai_gen_id }} {
@@ -274,12 +338,27 @@
       padding: {{ block.settings.content_padding | times: 0.6 }}px;
     }
 
+    .ai-split-section__content-{{ ai_gen_id }}::before {
+      width: 250px;
+      height: 250px;
+      top: -30%;
+    }
+
     .ai-split-section__heading-{{ ai_gen_id }} {
       font-size: {{ block.settings.heading_size | times: 0.8 }}px;
+      padding-left: 15px;
+    }
+
+    .ai-split-section__heading-{{ ai_gen_id }}::before {
+      width: 4px;
     }
 
     .ai-split-section__text-{{ ai_gen_id }} {
       font-size: {{ block.settings.text_size | times: 0.9 }}px;
+    }
+
+    .ai-split-section__button-{{ ai_gen_id }}::after {
+      font-size: 16px;
     }
 
     .ai-split-section__product-wrapper-{{ ai_gen_id }} {
