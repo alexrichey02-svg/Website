@@ -591,7 +591,7 @@
         const itemHeight = firstItem.offsetHeight;
         const gap = {{ block.settings.product_spacing }};
 
-        this.containerHeight = itemHeight * 2 + gap;
+        this.containerHeight = itemHeight * 1.6;
         this.scrollContainer.style.height = `${this.containerHeight}px`;
       }
 
@@ -675,7 +675,7 @@
       "step": 50,
       "unit": "px",
       "label": "Minimum height",
-      "default": 600
+      "default": 500
     },
     {
       "type": "color",
