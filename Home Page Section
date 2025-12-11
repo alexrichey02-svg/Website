@@ -591,8 +591,11 @@
         const itemHeight = firstItem.offsetHeight;
         const gap = {{ block.settings.product_spacing }};
 
-        this.containerHeight = itemHeight * 2 + gap;
+        this.containerHeight = itemHeight * 1.6;
         this.scrollContainer.style.height = `${this.containerHeight}px`;
+
+        const centerOffset = (this.containerHeight - itemHeight) / 2;
+        this.scrollWrapper.style.paddingTop = `${centerOffset}px`;
       }
 
       scrollToPrevious() {
@@ -617,14 +620,8 @@
         const firstItem = this.productItems[0];
         const itemHeight = firstItem.offsetHeight;
         const gap = {{ block.settings.product_spacing }};
-        const centerOffset = (this.containerHeight - itemHeight) / 2;
 
-        let scrollDistance;
-        if (this.currentIndex === 0) {
-          scrollDistance = 0;
-        } else {
-          scrollDistance = (itemHeight + gap) * this.currentIndex - centerOffset;
-        }
+        const scrollDistance = (itemHeight + gap) * this.currentIndex;
 
         this.scrollWrapper.style.transform = `translateY(-${scrollDistance}px)`;
 
@@ -675,7 +672,7 @@
       "step": 50,
       "unit": "px",
       "label": "Minimum height",
-      "default": 600
+      "default": 500
     },
     {
       "type": "color",
