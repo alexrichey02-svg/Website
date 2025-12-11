@@ -593,9 +593,6 @@
 
         this.containerHeight = itemHeight * 1.6;
         this.scrollContainer.style.height = `${this.containerHeight}px`;
-
-        const centerOffset = (this.containerHeight - itemHeight) / 2;
-        this.scrollWrapper.style.paddingTop = `${centerOffset}px`;
       }
 
       scrollToPrevious() {
@@ -620,8 +617,14 @@
         const firstItem = this.productItems[0];
         const itemHeight = firstItem.offsetHeight;
         const gap = {{ block.settings.product_spacing }};
+        const centerOffset = (this.containerHeight - itemHeight) / 2;
 
-        const scrollDistance = (itemHeight + gap) * this.currentIndex;
+        let scrollDistance;
+        if (this.currentIndex === 0) {
+          scrollDistance = 0;
+        } else {
+          scrollDistance = (itemHeight + gap) * this.currentIndex - centerOffset;
+        }
 
         this.scrollWrapper.style.transform = `translateY(-${scrollDistance}px)`;
 
