@@ -1,13 +1,9 @@
-{% doc %}
-  @prompt
-    Create a way for customers to view and order from all of our locations, add a small image to each location
-{% enddoc %}
-{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign ai_gen_id = section.id | replace: '_', '' | downcase %}
 
 {% style %}
   .ai-location-selector-{{ ai_gen_id }} {
     padding: 40px 20px;
-    background-color: {{ block.settings.background_color }};
+    background-color: {{ section.settings.background_color }};
   }
 
   .ai-location-selector__container-{{ ai_gen_id }} {
@@ -21,14 +17,14 @@
   }
 
   .ai-location-selector__title-{{ ai_gen_id }} {
-    font-size: {{ block.settings.title_size }}px;
-    color: {{ block.settings.text_color }};
+    font-size: {{ section.settings.title_size }}px;
+    color: {{ section.settings.text_color }};
     margin: 0 0 12px;
   }
 
   .ai-location-selector__subtitle-{{ ai_gen_id }} {
-    font-size: {{ block.settings.subtitle_size }}px;
-    color: {{ block.settings.text_color }};
+    font-size: {{ section.settings.subtitle_size }}px;
+    color: {{ section.settings.text_color }};
     opacity: 0.8;
     margin: 0;
   }
@@ -41,8 +37,8 @@
   }
 
   .ai-location-card-{{ ai_gen_id }} {
-    background-color: {{ block.settings.card_background }};
-    border-radius: {{ block.settings.card_border_radius }}px;
+    background-color: {{ section.settings.card_background }};
+    border-radius: {{ section.settings.card_border_radius }}px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -55,7 +51,7 @@
 
   .ai-location-card__image-wrapper-{{ ai_gen_id }} {
     width: 100%;
-    height: {{ block.settings.image_height }}px;
+    height: {{ section.settings.image_height }}px;
     overflow: hidden;
     background-color: #f4f4f4;
   }
@@ -79,7 +75,7 @@
   .ai-location-card__name-{{ ai_gen_id }} {
     font-size: 20px;
     font-weight: 600;
-    color: {{ block.settings.text_color }};
+    color: {{ section.settings.text_color }};
     margin: 0 0 12px;
   }
 
@@ -93,7 +89,7 @@
     gap: 8px;
     margin-bottom: 8px;
     font-size: 14px;
-    color: {{ block.settings.text_color }};
+    color: {{ section.settings.text_color }};
     opacity: 0.9;
   }
 
@@ -107,12 +103,12 @@
   .ai-location-card__icon-{{ ai_gen_id }} svg {
     width: 100%;
     height: 100%;
-    fill: {{ block.settings.accent_color }};
+    fill: {{ section.settings.accent_color }};
   }
 
   .ai-location-card__hours-{{ ai_gen_id }} {
     font-size: 13px;
-    color: {{ block.settings.text_color }};
+    color: {{ section.settings.text_color }};
     opacity: 0.8;
     margin-bottom: 16px;
     padding-top: 12px;
@@ -123,17 +119,17 @@
     display: inline-block;
     width: 100%;
     padding: 12px 24px;
-    background-color: {{ block.settings.button_color }};
-    color: {{ block.settings.button_text_color }};
+    background-color: {{ section.settings.button_color }};
+    color: {{ section.settings.button_text_color }};
     text-align: center;
     text-decoration: none;
-    border-radius: {{ block.settings.button_border_radius }}px;
+    border-radius: {{ section.settings.button_border_radius }}px;
     font-weight: 600;
     transition: background-color 0.3s ease;
   }
 
   .ai-location-card__button-{{ ai_gen_id }}:hover {
-    background-color: {{ block.settings.button_hover_color }};
+    background-color: {{ section.settings.button_hover_color }};
   }
 
   @media screen and (max-width: 749px) {
@@ -142,54 +138,36 @@
     }
 
     .ai-location-selector__title-{{ ai_gen_id }} {
-      font-size: calc({{ block.settings.title_size }}px * 0.8);
+      font-size: calc({{ section.settings.title_size }}px * 0.8);
     }
   }
 {% endstyle %}
 
-<location-selector-{{ ai_gen_id }} class="ai-location-selector-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+<location-selector-{{ ai_gen_id }} class="ai-location-selector-{{ ai_gen_id }}">
   <div class="ai-location-selector__container-{{ ai_gen_id }}">
-    {% if block.settings.title != blank or block.settings.subtitle != blank %}
+    {% if section.settings.title != blank or section.settings.subtitle != blank %}
       <div class="ai-location-selector__header-{{ ai_gen_id }}">
-        {% if block.settings.title != blank %}
-          <h2 class="ai-location-selector__title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+        {% if section.settings.title != blank %}
+          <h2 class="ai-location-selector__title-{{ ai_gen_id }}">{{ section.settings.title }}</h2>
         {% endif %}
-        {% if block.settings.subtitle != blank %}
-          <p class="ai-location-selector__subtitle-{{ ai_gen_id }}">{{ block.settings.subtitle }}</p>
+        {% if section.settings.subtitle != blank %}
+          <p class="ai-location-selector__subtitle-{{ ai_gen_id }}">{{ section.settings.subtitle }}</p>
         {% endif %}
       </div>
     {% endif %}
 
     <div class="ai-location-selector__grid-{{ ai_gen_id }}">
-      {% for i in (1..11) %}
-        {% liquid
-          assign location_enabled_key = 'location_' | append: i | append: '_enabled'
-          assign location_name_key = 'location_' | append: i | append: '_name'
-          assign location_image_key = 'location_' | append: i | append: '_image'
-          assign location_address_key = 'location_' | append: i | append: '_address'
-          assign location_phone_key = 'location_' | append: i | append: '_phone'
-          assign location_hours_key = 'location_' | append: i | append: '_hours'
-          assign location_url_key = 'location_' | append: i | append: '_url'
-
-          assign location_enabled = block.settings[location_enabled_key]
-          assign location_name = block.settings[location_name_key]
-          assign location_image = block.settings[location_image_key]
-          assign location_address = block.settings[location_address_key]
-          assign location_phone = block.settings[location_phone_key]
-          assign location_hours = block.settings[location_hours_key]
-          assign location_url = block.settings[location_url_key]
-        %}
-
-        {% if location_enabled and location_name != blank %}
-          <div class="ai-location-card-{{ ai_gen_id }}">
+      {% for block in section.blocks %}
+        {% if block.type == 'location' %}
+          <div class="ai-location-card-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
             <div class="ai-location-card__image-wrapper-{{ ai_gen_id }}">
-              {% if location_image %}
+              {% if block.settings.image %}
                 <img
-                  src="{{ location_image | image_url: width: 600 }}"
-                  alt="{{ location_name | escape }}"
+                  src="{{ block.settings.image | image_url: width: 600 }}"
+                  alt="{{ block.settings.name | escape }}"
                   loading="lazy"
                   width="600"
-                  height="{{ block.settings.image_height }}"
+                  height="{{ section.settings.image_height }}"
                   class="ai-location-card__image-{{ ai_gen_id }}"
                 >
               {% else %}
@@ -198,41 +176,41 @@
             </div>
 
             <div class="ai-location-card__content-{{ ai_gen_id }}">
-              <h3 class="ai-location-card__name-{{ ai_gen_id }}">{{ location_name }}</h3>
-              
+              <h3 class="ai-location-card__name-{{ ai_gen_id }}">{{ block.settings.name }}</h3>
+
               <div class="ai-location-card__info-{{ ai_gen_id }}">
-                {% if location_address != blank %}
+                {% if block.settings.address != blank %}
                   <div class="ai-location-card__info-item-{{ ai_gen_id }}">
                     <span class="ai-location-card__icon-{{ ai_gen_id }}">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                       </svg>
                     </span>
-                    <span>{{ location_address }}</span>
+                    <span>{{ block.settings.address }}</span>
                   </div>
                 {% endif %}
 
-                {% if location_phone != blank %}
+                {% if block.settings.phone != blank %}
                   <div class="ai-location-card__info-item-{{ ai_gen_id }}">
                     <span class="ai-location-card__icon-{{ ai_gen_id }}">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
                       </svg>
                     </span>
-                    <span>{{ location_phone }}</span>
+                    <span>{{ block.settings.phone }}</span>
                   </div>
                 {% endif %}
               </div>
 
-              {% if location_hours != blank %}
+              {% if block.settings.hours != blank %}
                 <div class="ai-location-card__hours-{{ ai_gen_id }}">
-                  {{ location_hours }}
+                  {{ block.settings.hours }}
                 </div>
               {% endif %}
 
-              {% if location_url != blank %}
-                <a href="{{ location_url }}" class="ai-location-card__button-{{ ai_gen_id }}">
-                  {{ block.settings.button_text }}
+              {% if block.settings.url != blank %}
+                <a href="{{ block.settings.url }}" class="ai-location-card__button-{{ ai_gen_id }}">
+                  {{ section.settings.button_text }}
                 </a>
               {% endif %}
             </div>
@@ -276,7 +254,6 @@
 {% schema %}
 {
   "name": "Location selector",
-  "tag": null,
   "settings": [
     {
       "type": "header",
@@ -299,452 +276,6 @@
       "id": "button_text",
       "label": "Button text",
       "default": "Order Now"
-    },
-    {
-      "type": "header",
-      "content": "Location 1"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_1_enabled",
-      "label": "Enable location 1",
-      "default": true
-    },
-    {
-      "type": "image_picker",
-      "id": "location_1_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_1_name",
-      "label": "Name",
-      "default": "Downtown Location"
-    },
-    {
-      "type": "textarea",
-      "id": "location_1_address",
-      "label": "Address",
-      "default": "123 Main Street, City, State 12345"
-    },
-    {
-      "type": "text",
-      "id": "location_1_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_1_hours",
-      "label": "Hours",
-      "default": "Mon-Fri: 7am-6pm, Sat-Sun: 8am-5pm"
-    },
-    {
-      "type": "url",
-      "id": "location_1_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 2"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_2_enabled",
-      "label": "Enable location 2",
-      "default": true
-    },
-    {
-      "type": "image_picker",
-      "id": "location_2_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_2_name",
-      "label": "Name",
-      "default": "Uptown Location"
-    },
-    {
-      "type": "textarea",
-      "id": "location_2_address",
-      "label": "Address",
-      "default": "456 Oak Avenue, City, State 12345"
-    },
-    {
-      "type": "text",
-      "id": "location_2_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_2_hours",
-      "label": "Hours",
-      "default": "Mon-Fri: 7am-6pm, Sat-Sun: 8am-5pm"
-    },
-    {
-      "type": "url",
-      "id": "location_2_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 3"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_3_enabled",
-      "label": "Enable location 3",
-      "default": false
-    },
-    {
-      "type": "image_picker",
-      "id": "location_3_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_3_name",
-      "label": "Name"
-    },
-    {
-      "type": "textarea",
-      "id": "location_3_address",
-      "label": "Address"
-    },
-    {
-      "type": "text",
-      "id": "location_3_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_3_hours",
-      "label": "Hours"
-    },
-    {
-      "type": "url",
-      "id": "location_3_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 4"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_4_enabled",
-      "label": "Enable location 4",
-      "default": false
-    },
-    {
-      "type": "image_picker",
-      "id": "location_4_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_4_name",
-      "label": "Name"
-    },
-    {
-      "type": "textarea",
-      "id": "location_4_address",
-      "label": "Address"
-    },
-    {
-      "type": "text",
-      "id": "location_4_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_4_hours",
-      "label": "Hours"
-    },
-    {
-      "type": "url",
-      "id": "location_4_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 5"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_5_enabled",
-      "label": "Enable location 5",
-      "default": false
-    },
-    {
-      "type": "image_picker",
-      "id": "location_5_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_5_name",
-      "label": "Name"
-    },
-    {
-      "type": "textarea",
-      "id": "location_5_address",
-      "label": "Address"
-    },
-    {
-      "type": "text",
-      "id": "location_5_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_5_hours",
-      "label": "Hours"
-    },
-    {
-      "type": "url",
-      "id": "location_5_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 6"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_6_enabled",
-      "label": "Enable location 6",
-      "default": false
-    },
-    {
-      "type": "image_picker",
-      "id": "location_6_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_6_name",
-      "label": "Name"
-    },
-    {
-      "type": "textarea",
-      "id": "location_6_address",
-      "label": "Address"
-    },
-    {
-      "type": "text",
-      "id": "location_6_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_6_hours",
-      "label": "Hours"
-    },
-    {
-      "type": "url",
-      "id": "location_6_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 7"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_7_enabled",
-      "label": "Enable location 7",
-      "default": false
-    },
-    {
-      "type": "image_picker",
-      "id": "location_7_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_7_name",
-      "label": "Name"
-    },
-    {
-      "type": "textarea",
-      "id": "location_7_address",
-      "label": "Address"
-    },
-    {
-      "type": "text",
-      "id": "location_7_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_7_hours",
-      "label": "Hours"
-    },
-    {
-      "type": "url",
-      "id": "location_7_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 8"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_8_enabled",
-      "label": "Enable location 8",
-      "default": false
-    },
-    {
-      "type": "image_picker",
-      "id": "location_8_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_8_name",
-      "label": "Name"
-    },
-    {
-      "type": "textarea",
-      "id": "location_8_address",
-      "label": "Address"
-    },
-    {
-      "type": "text",
-      "id": "location_8_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_8_hours",
-      "label": "Hours"
-    },
-    {
-      "type": "url",
-      "id": "location_8_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 9"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_9_enabled",
-      "label": "Enable location 9",
-      "default": false
-    },
-    {
-      "type": "image_picker",
-      "id": "location_9_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_9_name",
-      "label": "Name"
-    },
-    {
-      "type": "textarea",
-      "id": "location_9_address",
-      "label": "Address"
-    },
-    {
-      "type": "text",
-      "id": "location_9_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_9_hours",
-      "label": "Hours"
-    },
-    {
-      "type": "url",
-      "id": "location_9_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 10"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_10_enabled",
-      "label": "Enable location 10",
-      "default": false
-    },
-    {
-      "type": "image_picker",
-      "id": "location_10_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_10_name",
-      "label": "Name"
-    },
-    {
-      "type": "textarea",
-      "id": "location_10_address",
-      "label": "Address"
-    },
-    {
-      "type": "text",
-      "id": "location_10_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_10_hours",
-      "label": "Hours"
-    },
-    {
-      "type": "url",
-      "id": "location_10_url",
-      "label": "Order link"
-    },
-    {
-      "type": "header",
-      "content": "Location 11"
-    },
-    {
-      "type": "checkbox",
-      "id": "location_11_enabled",
-      "label": "Enable location 11",
-      "default": false
-    },
-    {
-      "type": "image_picker",
-      "id": "location_11_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "location_11_name",
-      "label": "Name"
-    },
-    {
-      "type": "textarea",
-      "id": "location_11_address",
-      "label": "Address"
-    },
-    {
-      "type": "text",
-      "id": "location_11_phone",
-      "label": "Phone"
-    },
-    {
-      "type": "text",
-      "id": "location_11_hours",
-      "label": "Hours"
-    },
-    {
-      "type": "url",
-      "id": "location_11_url",
-      "label": "Order link"
     },
     {
       "type": "header",
@@ -843,9 +374,54 @@
       "default": 4
     }
   ],
+  "blocks": [
+    {
+      "type": "location",
+      "name": "Location",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Location Name"
+        },
+        {
+          "type": "textarea",
+          "id": "address",
+          "label": "Address",
+          "default": "123 Main Street, City, State 12345"
+        },
+        {
+          "type": "text",
+          "id": "phone",
+          "label": "Phone"
+        },
+        {
+          "type": "text",
+          "id": "hours",
+          "label": "Hours",
+          "default": "Mon-Fri: 7am-6pm, Sat-Sun: 8am-5pm"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Order link"
+        }
+      ]
+    }
+  ],
   "presets": [
     {
-      "name": "Location selector"
+      "name": "Location selector",
+      "blocks": [
+        { "type": "location" },
+        { "type": "location" }
+      ]
     }
   ]
 }
