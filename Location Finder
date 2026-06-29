@@ -161,7 +161,7 @@
     {% endif %}
 
     <div class="ai-location-selector__grid-{{ ai_gen_id }}">
-      {% for i in (1..6) %}
+      {% for i in (1..7) %}
         {% liquid
           assign location_enabled_key = 'location_' | append: i | append: '_enabled'
           assign location_name_key = 'location_' | append: i | append: '_name'
@@ -548,16 +548,12 @@
     },
     {
       "type": "header",
-      "content": "Style"
-    },
-    {
-      "type": "header",
-      "content": "Location 6"
+      "content": "Location 7"
     },
     {
       "type": "checkbox",
       "id": "location_7_enabled",
-      "label": "Enable location 6",
+      "label": "Enable location 7",
       "default": false
     },
     {
