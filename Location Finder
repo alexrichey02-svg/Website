@@ -161,7 +161,7 @@
     {% endif %}
 
     <div class="ai-location-selector__grid-{{ ai_gen_id }}">
-      {% for i in (1..7) %}
+      {% for i in (1..11) %}
         {% liquid
           assign location_enabled_key = 'location_' | append: i | append: '_enabled'
           assign location_name_key = 'location_' | append: i | append: '_name'
@@ -584,6 +584,166 @@
     {
       "type": "url",
       "id": "location_7_url",
+      "label": "Order link"
+    },
+    {
+      "type": "header",
+      "content": "Location 8"
+    },
+    {
+      "type": "checkbox",
+      "id": "location_8_enabled",
+      "label": "Enable location 8",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "location_8_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "location_8_name",
+      "label": "Name"
+    },
+    {
+      "type": "textarea",
+      "id": "location_8_address",
+      "label": "Address"
+    },
+    {
+      "type": "text",
+      "id": "location_8_phone",
+      "label": "Phone"
+    },
+    {
+      "type": "text",
+      "id": "location_8_hours",
+      "label": "Hours"
+    },
+    {
+      "type": "url",
+      "id": "location_8_url",
+      "label": "Order link"
+    },
+    {
+      "type": "header",
+      "content": "Location 9"
+    },
+    {
+      "type": "checkbox",
+      "id": "location_9_enabled",
+      "label": "Enable location 9",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "location_9_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "location_9_name",
+      "label": "Name"
+    },
+    {
+      "type": "textarea",
+      "id": "location_9_address",
+      "label": "Address"
+    },
+    {
+      "type": "text",
+      "id": "location_9_phone",
+      "label": "Phone"
+    },
+    {
+      "type": "text",
+      "id": "location_9_hours",
+      "label": "Hours"
+    },
+    {
+      "type": "url",
+      "id": "location_9_url",
+      "label": "Order link"
+    },
+    {
+      "type": "header",
+      "content": "Location 10"
+    },
+    {
+      "type": "checkbox",
+      "id": "location_10_enabled",
+      "label": "Enable location 10",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "location_10_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "location_10_name",
+      "label": "Name"
+    },
+    {
+      "type": "textarea",
+      "id": "location_10_address",
+      "label": "Address"
+    },
+    {
+      "type": "text",
+      "id": "location_10_phone",
+      "label": "Phone"
+    },
+    {
+      "type": "text",
+      "id": "location_10_hours",
+      "label": "Hours"
+    },
+    {
+      "type": "url",
+      "id": "location_10_url",
+      "label": "Order link"
+    },
+    {
+      "type": "header",
+      "content": "Location 11"
+    },
+    {
+      "type": "checkbox",
+      "id": "location_11_enabled",
+      "label": "Enable location 11",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "location_11_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "location_11_name",
+      "label": "Name"
+    },
+    {
+      "type": "textarea",
+      "id": "location_11_address",
+      "label": "Address"
+    },
+    {
+      "type": "text",
+      "id": "location_11_phone",
+      "label": "Phone"
+    },
+    {
+      "type": "text",
+      "id": "location_11_hours",
+      "label": "Hours"
+    },
+    {
+      "type": "url",
+      "id": "location_11_url",
       "label": "Order link"
     },
     {
